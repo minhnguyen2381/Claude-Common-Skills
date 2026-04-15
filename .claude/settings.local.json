@@ -84,7 +84,13 @@
       "Skill(git-commit-push-seperate-mission)",
       "Bash(awk '{print $9, \"\\(\" $5 \"\\)\"}')",
       "Bash(JAVA_HOME=\"C:/Program Files/Java/jdk-21\" ./gradlew assembleDebug)",
-      "Bash(xargs -I {} basename {})"
+      "Bash(xargs -I {} basename {})",
+      "Bash(PYTHONIOENCODING=utf-8 python \".claude/skills/skill-creator/scripts/init_skill.py\" android-code-review --path \".claude/skills\")",
+      "Bash(mkdir -p \"F:/ClaudeSkillCommon/.claude/skills/android-code-review/references\")",
+      "Bash(mkdir -p \"F:/ClaudeSkillCommon/.claude/skills/android-code-review/scripts\")",
+      "Bash(mkdir -p \"F:/ClaudeSkillCommon/.claude/commands\")",
+      "Bash(PYTHONIOENCODING=utf-8 python \".claude/skills/skill-creator/scripts/quick_validate.py\" \".claude/skills/android-code-review\")",
+      "Bash(PYTHONIOENCODING=utf-8 python:*)"
     ]
   }
 }
