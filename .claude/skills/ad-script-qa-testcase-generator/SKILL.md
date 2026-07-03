@@ -1,107 +1,75 @@
 ---
 name: ad-script-qa-testcase-generator
-description: This skill parses advertising scripts (Word/Markdown) AND In-App Ad Monetization Configs (JSON). It checks against reference guidelines and generates a QA Checklist/Testcase table in Excel (.xlsx) format. Use this skill when the user wants to generate testcases for video/image ad scripts OR app ad configuration files.
+description: Skill này dùng để phân tích kịch bản quảng cáo (Word/Markdown) VÀ Cấu hình hiển thị quảng cáo trong App (JSON). Nó kiểm tra so với các hướng dẫn chuẩn và tự động sinh ra bảng Testcase/Checklist định dạng Excel (.xlsx). Sử dụng skill này khi người dùng muốn tạo testcase cho kịch bản quảng cáo video hoặc file cấu hình quảng cáo trong ứng dụng.
 ---
 
-# Ad Script & Monetization QA Testcase Generator
+# Trình tạo Testcase QA cho Kịch bản Quảng cáo & Cấu hình Kiếm tiền
 
-This skill acts as a Quality Assurance (QA) and Ad Compliance Specialist. It analyzes either advertising script content (for video production) or Ad Monetization JSON configuration (for App UI) and automatically generates a detailed Checklist/Testcase table.
+Skill này đóng vai trò là Chuyên viên QA và Kiểm duyệt Quảng cáo. Nó phân tích nội dung kịch bản quảng cáo (cho sản xuất video) hoặc file cấu hình Ad Monetization (dành cho App UI) và tự động tạo ra một bảng Testcase/Checklist chi tiết.
 
-**CRITICAL REQUIREMENT:** The final output and all generated test cases within the Excel file MUST be written in Vietnamese UTF-8.
+**YÊU CẦU QUAN TRỌNG:** Toàn bộ testcase và file Excel đầu ra PHẢI được viết bằng Tiếng Việt UTF-8.
 
-## Usage Instructions
+## Hướng dẫn sử dụng
 
-When asked to generate testcases, first determine the type of input the user has provided:
+Khi được yêu cầu tạo testcase, trước tiên hãy xác định loại đầu vào mà người dùng cung cấp:
 
-### In-App Ad Monetization Script / Config (Word/Markdown/JSON)
-If the user provides a script or configuration file for displaying ads in an App (containing placements, formats like Native, Interstitial, Banner, PIP, SB...):
-1. **Identify Formats**: Scan the content and identify all ad placements/formats (e.g., Native, Interstitial, PIP, SB, App Open...).
-2. **Read Guidelines**: Read the reference guidelines at `references/app_ad_guidelines.md`.
-3. **Generate Default Test Cases (MANDATORY & EXHAUSTIVE)**: For EACH ad placement listed in the script, you MUST generate **ALL** default test cases for that format as defined in the reference guidelines, **even if they are not explicitly mentioned in the user's script/config**. You MUST refer to the detailed documents in the `references/` folder (e.g., `ad_guideline_native.md`, `ad_guideline_interstitial.md`...) and blindly extract every single check/rule into a testcase. It is MANDATORY to use the `view_file` tool to read these documents fully before generating testcases. DO NOT SKIP THIS STEP.
-4. **Generate Specific Test Cases**: In addition to the exhaustive default test cases from step 3, add any specific logic test cases based on the user's specific configuration description.
+## QUAN TRỌNG: với Test case từ kịch bản, tuân thủ theo hướng dẫn sau:
+Đóng vai (Role): Bạn là một Senior QA Engineer chuyên nghiệp trong lĩnh vực Mobile App (Android/iOS). Bạn có tư duy logic sắc bén, giỏi tìm ra các trường hợp ngoại lệ (edge cases) và các lỗi tiềm ẩn liên quan đến UI/UX, logic quảng cáo (Ads - AdMob/AppLovin/MAX).
+Nhiệm vụ (Task): Dựa trên tài liệu requirement bên dưới, hãy viết một bộ Test Case thật chi tiết.
+Nội dung Requirement (Context): > [Paste nội dung của 1 màn hình vào đây. VD: Copy toàn bộ phần "Màn Water Remove Auto, case đang trong quá trình Cleaning"]
 
-### Output Format (Excel - .xlsx)
-For BOTH branches, you MUST create and execute a Python script using the `openpyxl` library to generate a `.xlsx` file. DO NOT just output text/markdown.
-If `openpyxl` is not installed, the script will install it automatically.
-You need to replace the `data_by_config` section in the script below with the actual analyzed data from the user's script/config file.
+Yêu cầu Định dạng (Format):
+Trình bày dưới dạng bảng (Table) với các cột sau:
+Test Case ID: (VD: WATER_AUTO_001)
+Phân loại : (Happy Path / Alternative / Edge Case)
+Tiêu đề (Title): Ngắn gọn, rõ mục đích test.
+Điều kiện tiền quyết (Pre-conditions): Cấu hình remote, trạng thái mạng, trạng thái app trước khi test.
+Các bước thực hiện (Steps): Từng bước rõ ràng.
+Kết quả mong đợi (Expected Results): Mô tả chi tiết UI/UX và logic quảng cáo diễn ra.
+Ràng buộc & Lưu ý (Constraints):
+Bắt buộc phải có các Test Case về sự cố mạng (Network offline/online giữa chừng).
+Bắt buộc phải có Test Case về Remote Config (giá trị X(s) thay đổi, thời gian auto đóng QC = 3s, >3s).
+Lưu ý các trường hợp quảng cáo load chậm, load xịt, hoặc thao tác của user diễn ra quá nhanh (chuyển màn trước khi quảng cáo kịp load).
 
-Requirements for the Excel file:
-1. **Ad Format/Placement**: Clearly identify the format (Native, Interstitial, App Open, Banner, Reward, etc.) and place it in the corresponding column or the Sheet Header.
-2. **Adhere to Default Testcases**: Must always generate default testcases for EACH ad placement corresponding to that "config name" (e.g., Interstitial must have a testcase checking the X button, full-screen display; Native must check for the 'Ad' label in UI, CTA layout, etc.).
-3. **Column Structure**: Must have the following columns: `Testcase_ID`, `Config Name`, `Ad Format / Placement`, `Category`, `Test Condition`, `Expected Result`, `Status`, `Notes/Actual`.
-4. **Group by Config Name**: Create separate sheets for each "Config Name" for easy management.
-5. **Status Dropdown**: The Status column must have Data Validation: `"Pass,Fail,N/A,Untested"`.
-6. **Vietnamese Language**: The generated testcases data MUST be written in Vietnamese UTF-8.
 
-#### Python Script (Copy and replace the `data_by_config` data, then use the run_command tool to execute):
-```python
-import sys
-import subprocess
-import os
+## Các bước xử lý
 
-try:
-    from openpyxl import Workbook
-    from openpyxl.worksheet.datavalidation import DataValidation
-    from openpyxl.styles import Font, PatternFill
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "openpyxl"])
-    from openpyxl import Workbook
-    from openpyxl.worksheet.datavalidation import DataValidation
-    from openpyxl.styles import Font, PatternFill
+### 1. Xử lý File Đầu vào (Word / Excel / JSON / Markdown)
 
-# FILL IN THE ANALYZED DATA HERE (IN VIETNAMESE)
-# Structure: data_by_config[Sheet_Name] = [List of rows]
-# Columns: ["Testcase_ID", "Config Name", "Ad Format / Placement", "Category", "Test Condition", "Expected Result", "Status", "Notes/Actual"]
-data_by_config = {
-    "Language1.1": [
-        ["TC_NAT_001", "Language1.1", "Native Ad", "UI/Layout", "Kiểm tra màu nền và CTA", "Màu nền đúng chuẩn, nút CTA bo góc 8dp", "", ""],
-        ["TC_NAT_002", "Language1.1", "Native Ad", "Compliance", "Kiểm tra icon/text Ad", "Bắt buộc có chữ 'Ad' hoặc 'Quảng cáo' rõ ràng", "", ""],
-    ],
-    "DefaultConfig": [
-        ["TC_INT_001", "DefaultConfig", "Interstitial Ad", "Behavior", "Hiển thị quảng cáo Interstitial", "Phủ full màn hình và chặn thao tác người dùng", "", ""],
-        ["TC_INT_002", "DefaultConfig", "Interstitial Ad", "Behavior", "Nút Close", "Nút X (Close) hiển thị sau N giây và bấm được", "", ""],
-    ]
-}
+- Nếu người dùng cung cấp file `docx` hoặc `xlsx`/`xls` mà bạn không thể đọc trực tiếp, bạn hãy chạy script Python có sẵn: `python scripts/parse_input.py <đường_dẫn_file>` để trích xuất nội dung text.
+- Phân tích nội dung đã được trích xuất.
 
-wb = Workbook()
-wb.remove(wb.active) # Remove default sheet
+### 2. Cấu hình Quảng cáo trong App (JSON/Markdown/Word)
 
-headers = ["Testcase_ID", "Config Name", "Ad Format / Placement", "Category", "Test Condition", "Expected Result", "Status", "Notes/Actual"]
-header_fill = PatternFill(start_color="D3D3D3", end_color="D3D3D3", fill_type="solid")
+1. **Xác định Định dạng (Format)**: Quét nội dung và xác định tất cả các vị trí/định dạng quảng cáo (ví dụ: Native, Interstitial, Banner, PIP, SB, Reward, App Open...).
+2. **Đọc Hướng dẫn Chung & Tạo Testcase Mặc định Cho Toàn Bộ Loại Quảng Cáo (BẮT BUỘC)**: Đọc tài liệu tham chiếu `references/app_ad_guidelines.md`. Test case type của loại này được phân vào loại guideline.
+3. **Đọc Hướng dẫn Chi tiết & Tạo Testcase Mặc định (BẮT BUỘC)**: Với MỖI định dạng quảng cáo có trong kịch bản, bạn PHẢI đọc file hướng dẫn tương ứng (ví dụ: `ad_guideline_native.md`, `ad_guideline_interstitial.md`...) và BẮT BUỘC chép toàn bộ test case nằm trong phần "Checklist test case bắt buộc" của tài liệu đó vào kết quả. Test case type của loại này được phân vào loại guideline.
+4. **Tạo Testcase Cụ thể**: Bổ sung các testcase logic chi tiết dựa trên cấu hình cụ thể mà người dùng cung cấp. Test case type của loại này được phân vào loại user cung cấp.
 
-for sheet_name, testcases in data_by_config.items():
-    ws = wb.create_sheet(title=str(sheet_name)[:31]) # Sheet name max length is 31
-    ws.append(headers)
-    
-    # Format Header
-    for cell in ws[1]:
-        cell.font = Font(bold=True)
-        cell.fill = header_fill
-    
-    # Append Data
-    for row in testcases:
-        ws.append(row)
-        
-    # Auto-fit columns
-    for col in ws.columns:
-        max_length = 0
-        column = col[0].column_letter
-        for cell in col:
-            try:
-                if len(str(cell.value)) > max_length:
-                    max_length = len(cell.value)
-            except:
-                pass
-        adjusted_width = (max_length + 2)
-        ws.column_dimensions[column].width = adjusted_width
+### 3. Checklist Kiểm tra lại (Dành cho Agent)
 
-    # Add Dropdown Data Validation to Status column (G is the 7th column)
-    dv = DataValidation(type="list", formula1='"Pass,Fail,N/A,Untested"', allow_blank=True)
-    ws.add_data_validation(dv)
-    dv.add(f"G2:G{len(testcases)+1}")
+Trước khi xuất kết quả, bạn hãy tự kiểm tra lại (không cần in ra cho người dùng):
 
-output_file = os.path.join(os.getcwd(), "QA_Testcases.xlsx")
-wb.save(output_file)
-print(f"Excel file created successfully at: {output_file}")
-```
-After executing the above script using `run_command`, please return the `.xlsx` file path to the user.
+- [ ] Đã thêm đầy đủ "Checklist test case bắt buộc" (từ cả toàn bộ loại quảng cáo cho đến từng loại quảng cáo riêng biệt) từ các file hướng dẫn cho từng loại quảng cáo chưa?
+- [ ] Tất cả test case đã bao phủ được các logic cấu hình riêng mà người dùng cung cấp chưa?
+- [ ] Test case type đã phân biệt được loại là được thêm từ guideline hay là từ kịch bản ads user cung cấp hay chưa?
+- [ ] Trạng thái mặc định đã được set là `Untested` chưa?
+
+### 4. Định dạng Đầu ra
+
+1. Bạn KHÔNG tự tạo mã Python để xuất Excel bằng thư viện openpyxl từ đầu. 
+2. Thay vào đó, bạn phải tạo ra một file CSV có tên `testcases.csv` trong thư mục làm việc của người dùng (hoặc artifact) với cấu trúc cột chính xác như sau:
+   `Testcase_ID,Testcase Type,Config Name,Ad Format / Placement,Category,Test Condition,Expected Result,Status,Notes/Actual`
+
+*Lưu ý khi tạo CSV:*
+
+- Dòng đầu tiên phải là header (chính xác như trên).
+- Các cột phải được ngăn cách bằng dấu phẩy `,`. Nếu nội dung cột có chứa dấu phẩy, phải bao bọc nội dung đó bằng dấu ngoặc kép `"..."`.
+- Cột `Status` luôn điền mặc định là `Untested`.
+3. Sau khi file CSV được tạo thành công, bạn gọi lệnh thực thi script tạo Excel đã được viết sẵn trong thư mục `scripts` của skill này:
+   
+   ```bash
+   python F:\ClaudeSkillCommon\.claude\skills\ad-script-qa-testcase-generator\scripts\generate_testcase.py <đường_dẫn_tới_file_testcases.csv> <đường_dẫn_tới_file_output.xlsx>
+   ```
+
+4. Nếu chạy script thành công, hãy cung cấp cho người dùng đường dẫn đến file `.xlsx` được tạo ra. Kèm theo một vài ví dụ code testcase hoặc bảng markdown tóm tắt để người dùng hình dung ý tưởng.
