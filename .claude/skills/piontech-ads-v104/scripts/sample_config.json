@@ -1,0 +1,135 @@
+{
+  "timeDelayNative": 4000,
+  "positionCloseNativeInterstitial": 2,
+  "disableAllConfig": false,
+  "disableOpenApp": false,
+  "disableInterstitial": false,
+  "disableNative": false,
+  "disableNativeFullScreen": false,
+  "disableNativeInterstitial": false,
+  "disableBanner": false,
+  "disableBannerAdaptive": false,
+  "disableBannerLarge": false,
+  "disableBannerInline": false,
+  "disableBannerCollapsible": false,
+  "disableRewardVideo": false,
+  "disableRewardInter": false,
+  "listConfig": [
+    {
+      "configName": "splash",
+      "isOn": true,
+      "type": "interstitial"
+    },
+    {
+      "configName": "Language1.1",
+      "isOn": true,
+      "type": "native",
+      "ctaGradientListColor": [
+        "#E5240B",
+        "#E5240B"
+      ],
+      "textCTAColor": "#FFFFFF",
+      "ctaRatio": "100:16",
+      "ctaConnerRadius": 6,
+      "layoutTemplate": "medium_icon_left_cta_right_collapsible",
+      "backGroundColor": "#121212",
+      "textContentColor": "#FFFFFF",
+      "isPreloadAfterShow": false,
+      "isCloseWhenClick": false,
+      "isCloseWhenClickNativeCollapsible": false
+    },
+    {
+      "configName": "Splash-afterinter",
+      "isOn": false,
+      "type": "native_interstitial",
+      "ctaGradientListColor": [
+        "#2F8FE6",
+        "#304574"
+      ],
+      "textCTAColor": "#FFFFFF",
+      "ctaRatio": "100:40",
+      "ctaConnerRadius": 5,
+      "layoutTemplate": "nativefull_closebot_ctatop",
+      "backGroundColor": "#FFFFFF",
+      "textContentColor": "#2e2e2e",
+      "isPreloadAfterShow": false,
+      "isCloseWhenClick": false,
+      "isCloseWhenClickNativeCollapsible": false,
+      "ctaAnimationSpeed": 2000,
+      "nativeStrokeWidth": 1.5,
+      "nativeStrokeColor": "#3300BB"
+    },
+    {
+      "configName": "appresume",
+      "isOn": true,
+      "type": "open_app"
+    },
+    {
+      "configName": "home_bottom",
+      "isOn": true,
+      "type": "native",
+      "ctaGradientListColor": [
+        "#1468E2",
+        "#1468E2"
+      ],
+      "textCTAColor": "#FFFFFF",
+      "ctaRatio": "100:40",
+      "ctaConnerRadius": 6,
+      "layoutTemplate": "small_icon_ctaright_collapsible",
+      "backGroundColor": "#121212",
+      "textContentColor": "#FFFFFF",
+      "isPreloadAfterShow": false,
+      "isCloseWhenClick": true,
+      "isCloseWhenClickNativeCollapsible": true
+    },
+    {
+      "configName": "home-select",
+      "isOn": true,
+      "type": "interstitial",
+      "timeDelayShowInter": 5,
+      "isShowNativeAfterInter": true
+    },
+    {
+      "configName": "camera_result_bottom",
+      "isOn": false,
+      "type": "banner_adaptive",
+      "ctaGradientListColor": [
+        "#2F8FE6",
+        "#304574"
+      ],
+      "textCTAColor": "#FFFFFF",
+      "ctaRatio": "100:42",
+      "ctaConnerRadius": 10,
+      "layoutTemplate": "small_icon_ctaright",
+      "backGroundColor": "#F5F5F5",
+      "textContentColor": "#2e2e2e",
+      "isPreloadAfterShow": false,
+      "isCloseWhenClick": false,
+      "isCloseWhenClickNativeCollapsible": true,
+      "ctaAnimationSpeed": 2000,
+      "nativeStrokeWidth": 1.5,
+      "nativeStrokeColor": "#3300BB"
+    },
+    {
+      "configName": "onboardfull1.1",
+      "isOn": false,
+      "type": "native_full_screen",
+      "ctaGradientListColor": [
+        "#2F8FE6",
+        "#304574"
+      ],
+      "textCTAColor": "#FFFFFF",
+      "ctaRatio": "100:42",
+      "ctaConnerRadius": 10,
+      "layoutTemplate": "custom_native_layout",
+      "backGroundColor": "#FFFFFF",
+      "textContentColor": "#2e2e2e",
+      "isPreloadAfterShow": true,
+      "isCloseWhenClick": true,
+      "isCloseWhenClickNativeCollapsible": true,
+      "ctaAnimationSpeed": 2000,
+      "nativeStrokeWidth": 1.5,
+      "nativeStrokeColor": "#3300BB"
+    }
+  ]
+}

@@ -20,8 +20,7 @@ Khi phân tích cấu hình quảng cáo Interstitial, BẮT BUỘC thêm các t
 1. Kiểm tra quảng cáo che phủ toàn bộ màn hình.
 2. Kiểm tra isShowNativeAfterInter=false => Không load và show quảng cáo native after inter (hoặc native interstitial) tại vị trí này
 3. Kiểm tra isShowNativeAfterInter=true => Load và show được quảng cáo native after inter (hoặc native interstitial) tại vị trí này
-2. Kiểm tra nội dung ứng dụng bên dưới bị vô hiệu hóa khi quảng cáo đang hiện.
-3. Kiểm tra thời gian xuất hiện của nút Close (X) (nếu cấu hình có yêu cầu delay).
-4. Kiểm tra nhấn nút Close (X) quảng cáo sẽ đóng và ứng dụng trở về trạng thái bình thường.
-5. Kiểm tra nhấn nút Back của thiết bị (trên Android) có thể đóng quảng cáo.
-6. Kiểm tra nhấn vào nội dung quảng cáo sẽ mở Store/Trình duyệt chính xác.
+4. Kiểm tra nội dung ứng dụng bên dưới bị vô hiệu hóa khi quảng cáo đang hiện.
+5. Kiểm tra thời gian xuất hiện của nút Close (X) (nếu cấu hình có yêu cầu delay).
+6. Kiểm tra nhấn nút Close (X) quảng cáo sẽ đóng và ứng dụng trở về trạng thái bình thường.
+7. Kiểm tra nhấn vào nội dung quảng cáo sẽ mở Store/Trình duyệt chính xác.
