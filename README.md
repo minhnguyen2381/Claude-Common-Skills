@@ -12,7 +12,8 @@ ClaudeSkillCommon/
 │   └── settings.local.json # Permissions cụ thể máy — không deploy mặc định
 └── scripts/
     ├── deploy-claude-agents.cmd   # Launcher (khuyên dùng trên Windows)
-    └── deploy-claude-agents.ps1
+    ├── deploy-claude-agents.ps1
+    └── deploy-claude-agents.sh    # Bản tương đương cho Linux/macOS
 ```
 
 Khi deploy sang project khác, script tạo **hai thư mục giống nhau**:
@@ -24,10 +25,11 @@ Khi deploy sang project khác, script tạo **hai thư mục giống nhau**:
 
 ## Yêu cầu
 
-- Windows PowerShell 5.1 trở lên (hoặc PowerShell 7+)
+- Windows: PowerShell 5.1 trở lên (hoặc PowerShell 7+)
+- Linux/macOS: Bash 4+ (có sẵn trên hầu hết distro/macOS)
 - Quyền ghi vào thư mục project đích
 
-## Cách dùng
+## Cách dùng (Windows)
 
 Chạy từ thư mục gốc repo `ClaudeSkillCommon`.
 
@@ -69,15 +71,57 @@ Mặc định nguồn là `.claude` trong repo này. Có thể override:
 .\scripts\deploy-claude-agents.cmd -TargetPath "D:\AndroidStudioProjects\MyApp" -SourcePath "F:\ClaudeSkillCommon\.claude"
 ```
 
+## Cách dùng (Linux/macOS)
+
+Chạy từ thư mục gốc repo `ClaudeSkillCommon`.
+
+### Deploy thông thường (khuyên dùng)
+
+```bash
+./scripts/deploy-claude-agents.sh --target-path "/home/user/AndroidStudioProjects/MyApp"
+```
+
+Cũng có thể truyền target như tham số vị trí đầu tiên:
+
+```bash
+./scripts/deploy-claude-agents.sh "/home/user/AndroidStudioProjects/MyApp"
+```
+
+### Xem trước (không ghi file)
+
+```bash
+./scripts/deploy-claude-agents.sh --target-path "/home/user/AndroidStudioProjects/MyApp" --dry-run
+```
+
+### Kèm `settings.local.json`
+
+```bash
+./scripts/deploy-claude-agents.sh --target-path "/home/user/AndroidStudioProjects/MyApp" --include-settings
+```
+
+### Chỉ định nguồn khác
+
+```bash
+./scripts/deploy-claude-agents.sh --target-path "/home/user/AndroidStudioProjects/MyApp" --source-path "/home/user/ClaudeSkillCommon/.claude"
+```
+
+### Bỏ qua cập nhật `.gitignore`
+
+```bash
+./scripts/deploy-claude-agents.sh --target-path "/home/user/AndroidStudioProjects/MyApp" --skip-gitignore
+```
+
+> Nếu chưa có quyền chạy: `chmod +x scripts/deploy-claude-agents.sh`.
+
 ## Tham số
 
-| Tham số | Bắt buộc | Mặc định | Mô tả |
-|---|---|---|---|
-| `-TargetPath` | Có | — | Đường dẫn project đích |
-| `-SourcePath` | Không | `{repo}/.claude` | Thư mục nguồn cần copy |
-| `-IncludeSettings` | Không | Tắt | Copy thêm `settings.local.json` |
-| `-SkipGitIgnore` | Không | Tắt | Không cập nhật `.gitignore` project đích |
-| `-WhatIf` | Không | — | Chỉ in preview, không ghi file |
+| Windows (`-Param`) | Linux/macOS (`--param`) | Bắt buộc | Mặc định | Mô tả |
+|---|---|---|---|---|
+| `-TargetPath` | `--target-path`, `-t`, hoặc vị trí đầu tiên | Có | — | Đường dẫn project đích |
+| `-SourcePath` | `--source-path`, `-s` | Không | `{repo}/.claude` | Thư mục nguồn cần copy |
+| `-IncludeSettings` | `--include-settings` | Không | Tắt | Copy thêm `settings.local.json` |
+| `-SkipGitIgnore` | `--skip-gitignore` | Không | Tắt | Không cập nhật `.gitignore` project đích |
+| `-WhatIf` | `--dry-run` | Không | — | Chỉ in preview, không ghi file |
 
 ## Hành vi sync
 
@@ -147,7 +191,7 @@ cd F:\ClaudeSkillCommon
 .\scripts\deploy-claude-agents.cmd -TargetPath "D:\AndroidStudioProjects\Satellite"
 ```
 
-## Execution Policy bị chặn
+## Execution Policy bị chặn (Windows)
 
 Lỗi:
 
@@ -179,10 +223,11 @@ Sau đó chạy lại `.\scripts\deploy-claude-agents.ps1` như bình thường.
 
 | Lỗi | Nguyên nhân | Cách xử lý |
 |---|---|---|
-| `running scripts is disabled` | Execution Policy chặn `.ps1` | Dùng `deploy-claude-agents.cmd` hoặc xem mục trên |
-| `Source path not found` | `-SourcePath` sai hoặc chạy script ngoài repo | Chạy từ `ClaudeSkillCommon` hoặc truyền đúng `-SourcePath` |
+| `running scripts is disabled` | Execution Policy chặn `.ps1` (Windows) | Dùng `deploy-claude-agents.cmd` hoặc xem mục trên |
+| `Permission denied` khi chạy `.sh` (Linux/macOS) | File chưa có quyền thực thi | `chmod +x scripts/deploy-claude-agents.sh` |
+| `Source path not found` | `-SourcePath`/`--source-path` sai hoặc chạy script ngoài repo | Chạy từ `ClaudeSkillCommon` hoặc truyền đúng source path |
 | `missing skills/ subdirectory` | Thư mục nguồn không phải `.claude` hợp lệ | Kiểm tra đường dẫn nguồn có `skills/` |
-| `Access denied` | Không có quyền ghi target | Mở PowerShell với quyền phù hợp hoặc chọn path khác |
+| `Access denied` / `Permission denied` khi ghi target | Không có quyền ghi target | Mở terminal với quyền phù hợp hoặc chọn path khác |
 
 ## Phạm vi
 
