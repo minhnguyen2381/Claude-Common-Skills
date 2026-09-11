@@ -153,8 +153,11 @@ Counting is mechanical: `grep -c '^### \[' findings/*.md`, per severity with
 
 ## 5. Reviewer subagent briefing
 
-Dispatch with `subagent_type: "general-purpose"`. A fresh agent knows nothing about this
-session, so the prompt must be self-contained. Fill in the placeholders:
+Dispatch with `subagent_type: "general-purpose"` and `model: "sonnet"`. A reviewer matches
+code against a fixed checklist and writes findings in a fixed format; the judgement that
+needs the stronger model - severity calibration, verification, assembly - stays with the
+orchestrator. A fresh agent knows nothing about this session, so the prompt must be
+self-contained. Fill in the placeholders:
 
 ---
 
@@ -177,14 +180,26 @@ Files assigned to you (review ONLY these):
 
 **Method** - follow exactly:
 
-1. Read these three files in full before reviewing anything:
-   - `<skill-dir>/references/android-review-checklist.md` - the seven dimensions and their
-     section codes
-   - `<skill-dir>/references/architecture-guide.md` - MVVM / MVI / Clean Architecture rules
-   - `<skill-dir>/references/do-and-dont.md` - the code-pair catalogue to draw fixes from
-   Then read section 4 of `<skill-dir>/references/review-protocol.md` for the finding format.
-2. For each assigned file: get the diff (`git diff <range> -- <file>`), then read the full
-   current file so the change is judged in context, not in isolation.
+1. Your reading list, in this order. It is the whole list - each reference below is read at
+   the stated width, and the two catalogues are opened by section, not front to back.
+   - `<skill-dir>/references/android-review-checklist.md` - **in full**. This is the review
+     contract: the seven dimensions and their section codes.
+   - `<skill-dir>/references/architecture-guide.md` - **§1, the one §2/§3/§4 section matching
+     the pattern this project actually uses (from the context above), and §5**. A project on
+     MVVM is judged by the MVVM rules; the MVI and Clean sections do not apply to it.
+     ```bash
+     bash <skill-dir>/scripts/ref-section.sh <skill-dir>/references/architecture-guide.md '## 2. MVVM'
+     ```
+   - `<skill-dir>/references/do-and-dont.md` - **by section code, once you have a finding**.
+     When a finding cites dimension 2.1, pull section 2.1 and model the fix on it:
+     ```bash
+     bash <skill-dir>/scripts/ref-section.sh <skill-dir>/references/do-and-dont.md '## 2.1'
+     ```
+   - section 4 of `<skill-dir>/references/review-protocol.md` - the finding format.
+2. For each assigned file: get the diff (`git diff <range> -- <file>`), then read the
+   surrounding code so the change is judged in context, not in isolation. Read the whole
+   file when it is 400 lines or fewer; above that, read the diff plus roughly 60 lines
+   around each hunk, and widen only where a specific claim needs it.
 3. Evaluate every file against **all seven dimensions, in order**. Dimension 0
    (YAGNI / KISS / DRY) is judged **first and outranks every other dimension**: before asking
    whether the code is well-architected, ask whether it should exist at all, whether it is the

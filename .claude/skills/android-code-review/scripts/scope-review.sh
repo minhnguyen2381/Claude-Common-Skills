@@ -9,31 +9,43 @@
 #               Omit to review the working tree (staged + unstaged) against HEAD.
 #
 # Options:
-#   --max-files N   Max files per review batch (default 6)
-#   --max-lines N   Max changed lines per review batch (default 800)
+#   --max-files N   Max files per review batch (default 10)
+#   --max-lines N   Max changed lines per review batch (default 1200)
+#   --mode M        inline | subagent | auto (default auto)
+#
+# Inline is the cheap path: references are read once instead of once per subagent.
+# The gate is the number of source lines the reviewer must actually read (post-change
+# file sizes), not churn - churn does not predict how much context a review costs.
 #
 # Writes <workspace-dir>/manifest.md and prints a short plan summary to stdout.
 # Exit codes: 0 ok, 2 usage/repo error, 3 nothing to review.
 
 set -euo pipefail
 
-MAX_FILES=${MAX_FILES:-6}
-MAX_LINES=${MAX_LINES:-800}
-INLINE_FILES=${INLINE_FILES:-3}
-INLINE_LINES=${INLINE_LINES:-300}
+MAX_FILES=${MAX_FILES:-10}
+MAX_LINES=${MAX_LINES:-1200}
+INLINE_FILES=${INLINE_FILES:-10}
+INLINE_SRC=${INLINE_SRC:-2500}
 
 OUT=""
 BASE=""
+FORCE_MODE="auto"
 while [ $# -gt 0 ]; do
   case "$1" in
     --out)        OUT="$2"; shift 2 ;;
     --max-files)  MAX_FILES="$2"; shift 2 ;;
     --max-lines)  MAX_LINES="$2"; shift 2 ;;
-    -h|--help)    sed -n '3,20p' "$0"; exit 0 ;;
+    --mode)       FORCE_MODE="$2"; shift 2 ;;
+    -h|--help)    sed -n '3,25p' "$0"; exit 0 ;;
     -*)           echo "ERROR: unknown option $1" >&2; exit 2 ;;
     *)            BASE="$1"; shift ;;
   esac
 done
+
+case "$FORCE_MODE" in
+  inline|subagent|auto) ;;
+  *) echo "ERROR: --mode must be inline, subagent or auto" >&2; exit 2 ;;
+esac
 
 [ -n "$OUT" ] || { echo "ERROR: --out <workspace-dir> is required" >&2; exit 2; }
 git rev-parse --git-dir >/dev/null 2>&1 || { echo "ERROR: not a git repository" >&2; exit 2; }
@@ -101,6 +113,13 @@ TOTAL_DEL=$(printf '%s\n' "$ROWS" | awk -F'\t' '{s+=$4} END {print s+0}')
 TOTAL_CHURN=$((TOTAL_ADD + TOTAL_DEL))
 NMODULES=$(printf '%s\n' "$ROWS" | cut -f1 | sort -u | wc -l | tr -d ' ')
 
+# Source lines the reviewer must actually read: size of each post-change file that still
+# exists. Deleted files count 0 - there is nothing left to read. This, not churn, is what
+# decides whether a review fits in one context.
+TOTAL_SRC=$(printf '%s\n' "$ROWS" | cut -f2 | while IFS= read -r f; do
+  if [ -f "$f" ]; then wc -l < "$f"; else echo 0; fi
+done | awk '{s+=$1} END {print s+0}')
+
 # Assign batch ids: new batch on module change, or when file/line budget is exceeded.
 BATCHED=$(printf '%s\n' "$ROWS" | awk -F'\t' -v maxf="$MAX_FILES" -v maxl="$MAX_LINES" '
   BEGIN { b = 0; cf = 0; cl = 0; prev = "" }
@@ -114,12 +133,18 @@ BATCHED=$(printf '%s\n' "$ROWS" | awk -F'\t' -v maxf="$MAX_FILES" -v maxl="$MAX_
 
 NBATCHES=$(printf '%s\n' "$BATCHED" | cut -f1 | sort -u | wc -l | tr -d ' ')
 
-if [ "$NFILES" -le "$INLINE_FILES" ] && [ "$TOTAL_CHURN" -le "$INLINE_LINES" ]; then
+if [ "$FORCE_MODE" = "inline" ]; then
   MODE="inline"
-  MODE_WHY="${NFILES} file(s) / ${TOTAL_CHURN} changed lines is within the inline budget (<= ${INLINE_FILES} files and <= ${INLINE_LINES} lines)."
+  MODE_WHY="forced with --mode inline (${NFILES} file(s), ${TOTAL_SRC} source lines to read)."
+elif [ "$FORCE_MODE" = "subagent" ]; then
+  MODE="subagent"
+  MODE_WHY="forced with --mode subagent (${NFILES} file(s), ${TOTAL_SRC} source lines to read)."
+elif [ "$NFILES" -le "$INLINE_FILES" ] && [ "$TOTAL_SRC" -le "$INLINE_SRC" ]; then
+  MODE="inline"
+  MODE_WHY="${NFILES} file(s) / ${TOTAL_SRC} source lines is within the inline budget (<= ${INLINE_FILES} files and <= ${INLINE_SRC} source lines); review in one context and read the references once."
 else
   MODE="subagent"
-  MODE_WHY="${NFILES} file(s) / ${TOTAL_CHURN} changed lines exceeds the inline budget (> ${INLINE_FILES} files or > ${INLINE_LINES} lines); dispatch one reviewer subagent per batch."
+  MODE_WHY="${NFILES} file(s) / ${TOTAL_SRC} source lines exceeds the inline budget (> ${INLINE_FILES} files or > ${INLINE_SRC} source lines); dispatch one reviewer subagent per batch."
 fi
 
 {
@@ -133,6 +158,7 @@ fi
   echo "- added_lines: ${TOTAL_ADD}"
   echo "- deleted_lines: ${TOTAL_DEL}"
   echo "- total_churn: ${TOTAL_CHURN}"
+  echo "- source_lines_to_read: ${TOTAL_SRC}"
   echo "- batches: ${NBATCHES}"
   echo "- mode: ${MODE}"
   echo
@@ -176,6 +202,7 @@ echo "MODE=${MODE}"
 echo "RANGE=${RANGE}"
 echo "FILES=${NFILES}"
 echo "CHURN=${TOTAL_CHURN}"
+echo "SRC_LINES=${TOTAL_SRC}"
 echo "BATCHES=${NBATCHES}"
 echo "MANIFEST=${MANIFEST}"
 echo "BATCHES_TSV=${OUT}/batches.tsv"

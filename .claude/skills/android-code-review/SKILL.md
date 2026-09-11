@@ -40,10 +40,13 @@ early get buried, line numbers get reconstructed from memory, and the final repo
 drops half the work. This skill is built to make that impossible. Three rules override
 everything else in this file:
 
-1. **The orchestrator never bulk-reads changed source.** Reading source files and diffs is
-   delegated to reviewer subagents, which pay for it out of their own context. The
-   orchestrator only ever holds: the manifest, a ~55-line context briefing, the progress
-   ledger, and the finding files.
+1. **Subagents are the escape hatch, not the default.** Every subagent re-reads the
+   references from scratch, so a review split across N subagents pays for them N times.
+   Inline review pays once. `scope-review.sh` therefore keeps the review inline until the
+   source genuinely stops fitting one context (≤ 10 files and ≤ 2500 source lines), and only
+   then splits it into batches. In subagent mode the orchestrator does not bulk-read changed
+   source: it holds only the manifest, a ~55-line context briefing, the progress ledger, and
+   the finding files.
 2. **A finding is not real until it is on disk.** Findings are appended to
    `<workspace>/findings/<batch-id>.md` as they are discovered — never held in conversation
    to be written up later. The final report is assembled *by reading those files*.
@@ -80,8 +83,14 @@ about (and cannot drift between re-runs):
 bash <skill-dir>/scripts/scope-review.sh --out <workspace> [<base-ref>]
 ```
 
-It writes `manifest.md` and `batches.tsv`, and prints `MODE=inline|subagent` plus file and
-churn counts. Exit code 3 means there is nothing reviewable — report that and stop.
+It writes `manifest.md` and `batches.tsv`, and prints `MODE=inline|subagent` plus file,
+churn and source-line counts. Exit code 3 means there is nothing reviewable — report that
+and stop.
+
+The mode is decided by `SRC_LINES` — how much source the reviewer must actually read — not
+by churn, because churn does not predict what a review costs. If the user asks for one mode
+explicitly (for example to keep token use down), pass `--mode inline` or `--mode subagent`
+and say in the report header that the mode was forced.
 
 Read `manifest.md` (it is small). Do **not** run `git diff` for the whole range.
 
@@ -134,12 +143,18 @@ Branch on the mode reported by the script.
 
 #### Step 4a — Inline mode (`MODE=inline`)
 
-For a small change (≤ 3 files and ≤ 300 changed lines) subagent overhead is not worth it.
-Review directly:
+This is the default path (≤ 10 files and ≤ 2500 source lines). Reviewing in one context
+reads the references once instead of once per subagent, which is where a review's token
+cost actually goes. Review directly:
 
-1. Load `references/android-review-checklist.md`, `references/architecture-guide.md` and
-   `references/do-and-dont.md` in full.
-2. For each file: `git diff <range> -- <file>`, then read the full current file.
+1. Load the references at these widths — this is the whole reading list:
+   - `references/android-review-checklist.md` in full — it is the review contract.
+   - `references/architecture-guide.md`: §1, the one §2/§3/§4 section matching the pattern
+     this project uses, and §5.
+   - `references/do-and-dont.md`: by section code, once a finding exists —
+     `bash scripts/ref-section.sh references/do-and-dont.md '## 2.1'`.
+2. For each file: `git diff <range> -- <file>`, then read the whole file if it is 400 lines
+   or fewer; above that, read the diff plus ~60 lines around each hunk.
 3. Evaluate against all seven dimensions, **starting with dimension 0 (YAGNI/KISS/DRY)**.
 4. Append each finding to `<workspace>/findings/B1.md` in the §4 format **as it is found**,
    including the required `Phù hợp bối cảnh` paragraph. Open the file with the
@@ -147,9 +162,11 @@ Review directly:
 
 #### Step 4b — Subagent mode (`MODE=subagent`)
 
-Dispatch one reviewer subagent per batch, using `subagent_type: "general-purpose"` and the
-briefing template in `references/review-protocol.md` §5. Fill in every placeholder — a fresh
-agent has none of this session's context, so the prompt must stand alone.
+Dispatch one reviewer subagent per batch, using `subagent_type: "general-purpose"`,
+`model: "sonnet"`, and the briefing template in `references/review-protocol.md` §5. Fill in
+every placeholder — a fresh agent has none of this session's context, so the prompt must
+stand alone. The reviewer matches code against a fixed checklist; the judgement that needs
+the stronger model — severity calibration, verification, assembly — stays here in Step 5.
 
 - Launch up to **4 batches in parallel** by putting several `Agent` calls in one message.
 - Mark those batches `running` in `progress.md` before launching, `done` when they return,
