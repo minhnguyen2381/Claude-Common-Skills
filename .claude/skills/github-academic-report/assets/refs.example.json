@@ -1,0 +1,25 @@
+{
+  "references": [
+    {
+      "key": "fowler2002", "lang": "en", "type": "book",
+      "authors": ["Fowler, M."], "year": 2002,
+      "title": "Patterns of Enterprise Application Architecture",
+      "publisher": "Addison-Wesley", "place": "Boston",
+      "verified": { "url": "https://martinfowler.com/books/eaa.html", "accessed": "2026-09-12", "method": "fetch" }
+    },
+    {
+      "key": "google2024", "lang": "en", "type": "docs",
+      "organization": "Google", "year": 2024,
+      "title": "Guide to app architecture", "site": "Android Developers",
+      "url": "https://developer.android.com/topic/architecture",
+      "verified": { "url": "https://developer.android.com/topic/architecture", "accessed": "2026-09-12", "method": "fetch" }
+    },
+    {
+      "key": "anhnv2023", "lang": "vi", "type": "article",
+      "authors": ["Nguyễn Văn Ánh", "Lê Thị Bích"], "year": 2023,
+      "title": "Đánh giá khả năng bảo trì của kiến trúc MVVM trong ứng dụng di động",
+      "journal": "Tạp chí Khoa học và Công nghệ", "volume": 59, "issue": 4, "pages": "112-120",
+      "verified": { "url": "https://jst-haui.vn/", "accessed": "2026-09-12", "method": "fetch" }
+    }
+  ]
+}

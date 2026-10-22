@@ -1,0 +1,61 @@
+{
+  "config": { "captionChapterSource": "styleref", "phuLucNumbering": "sequential" },
+  "meta": {
+    "daiHoc": "ĐẠI HỌC CÔNG NGHIỆP HÀ NỘI",
+    "truong": "TRƯỜNG CÔNG NGHỆ THÔNG TIN VÀ TRUYỀN THÔNG",
+    "loaiBaoCao": "BÁO CÁO BÀI TẬP LỚN",
+    "hocPhan": "Kiến trúc phần mềm hiện đại",
+    "tenDeTai": "Phân tích kiến trúc ứng dụng Android theo mô hình MVVM",
+    "nguoiHuongDan": "TS. Vũ Việt Thắng",
+    "hinhThuc": "nhom",
+    "thanhVien": [
+      { "hoTen": "Nguyễn Văn An", "maHocVien": "2024CH0001" },
+      { "hoTen": "Trần Thị Bình", "maHocVien": "2024CH0002" }
+    ],
+    "lop": "CH-CNTT-K19", "khoaHoc": "19", "diaDiem": "Hà Nội", "nam": 2026,
+    "repoUrl": "https://github.com/android/architecture-samples"
+  },
+  "abbreviations": [
+    { "viet_tat": "MVVM", "day_du": "Model - View - ViewModel", "nghia": "Mô hình kiến trúc Model - Khung nhìn - Mô hình khung nhìn" },
+    { "viet_tat": "API", "day_du": "Application Programming Interface", "nghia": "Giao diện lập trình ứng dụng" }
+  ],
+  "loiNoiDau": [
+    { "t": "p", "text": "Báo cáo này được thực hiện trong khuôn khổ học phần *Kiến trúc phần mềm hiện đại*." }
+  ],
+  "moDau": [
+    { "t": "p", "text": "Kiến trúc phần mềm quyết định khả năng bảo trì của hệ thống [[cite:fowler2002]]." },
+    { "t": "bullets", "items": ["Mục tiêu thứ nhất", { "text": "Mục tiêu con", "level": 1 }] }
+  ],
+  "chuongs": [
+    {
+      "title": "Tổng quan về kiến trúc ứng dụng Android",
+      "blocks": [
+        { "t": "p", "text": "Chương này trình bày bối cảnh nghiên cứu. Tham chiếu [[xref:fig-mvvm]] và [[xref:tbl-sosanh]]." },
+        { "t": "h2", "text": "Bối cảnh" },
+        { "t": "p", "text": "Nội dung bối cảnh, có trích dẫn nhiều nguồn [[cite:fowler2002,google2024]]." },
+        { "t": "h3", "text": "Phát biểu bài toán" },
+        { "t": "p", "text": "Nội dung tiểu mục cấp ba." },
+        { "t": "figure", "id": "fig-mvvm", "caption": "Sơ đồ luồng dữ liệu trong MVVM", "src": "figures/fig-mvvm.png", "widthCm": 12 },
+        { "t": "table", "id": "tbl-sosanh", "caption": "So sánh MVC, MVP và MVVM",
+          "header": ["Tiêu chí", "MVC", "MVVM"],
+          "rows": [["Khả năng kiểm thử", "Trung bình", "Cao"], ["Ràng buộc dữ liệu", "Không", "Có"]],
+          "widths": [40, 30, 30], "source": "Nguồn: tổng hợp của nhóm tác giả." }
+      ]
+    },
+    {
+      "title": "Phân tích mã nguồn dự án",
+      "blocks": [
+        { "t": "p", "text": "Chương hai phân tích dự án thực tế." },
+        { "t": "h2", "text": "Cấu trúc thư mục" },
+        { "t": "code", "lang": "kotlin", "lines": ["class TaskViewModel(", "    private val repo: TaskRepository", ") : ViewModel()"], "caption": "Trích đoạn app/src/main/java/TaskViewModel.kt" },
+        { "t": "figure", "id": "fig-goi", "caption": "Phân bố mã nguồn theo gói", "src": "figures/fig-goi.png", "widthCm": 12 }
+      ]
+    }
+  ],
+  "ketLuan": [
+    { "t": "p", "text": "Báo cáo đã hoàn thành các mục tiêu đề ra." }
+  ],
+  "phuLucs": [
+    { "title": "Danh sách lớp chính của dự án", "blocks": [ { "t": "p", "text": "Nội dung phụ lục." } ] }
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "config": { "palette": "indigo-slate", "durationMinutes": 15 },
+  "slides": [
+    {
+      "layout": "COVER",
+      "title": "Phân tích kiến trúc ứng dụng Android theo mô hình MVVM",
+      "subtitle": "Nghiên cứu trường hợp dự án architecture-samples",
+      "notes": "⏱ ~45s | MỞ: Kính chào thầy và các bạn, nhóm chúng em trình bày kết quả phân tích kiến trúc ứng dụng Android theo mô hình MVVM. | Ý CHÍNH: đối tượng nghiên cứu là một dự án mã nguồn mở thực tế; mục tiêu là đánh giá mức độ tuân thủ MVVM; phương pháp là phân tích tĩnh mã nguồn kết hợp đối chiếu tài liệu chính thức. | CHUYỂN: Trước hết em xin trình bày nội dung buổi báo cáo."
+    },
+    {
+      "layout": "AGENDA",
+      "title": "Nội dung trình bày",
+      "items": ["Đặt vấn đề và mục tiêu", "Cơ sở lý thuyết về MVVM", "Phương pháp phân tích", "Kết quả trên dự án thực tế", "Đánh giá và hạn chế", "Kết luận, hướng phát triển"],
+      "notes": "⏱ ~40s | MỞ: Bài trình bày gồm sáu phần. | Ý CHÍNH: hai phần đầu xác lập bài toán và nền tảng lý thuyết; phần ba mô tả cách nhóm thu thập dữ liệu từ kho mã nguồn; phần bốn là kết quả định lượng; phần năm nêu các hạn chế của phương pháp. | CHUYỂN: Em bắt đầu với bối cảnh và lý do chọn đề tài."
+    },
+    {
+      "layout": "SECTION",
+      "kicker": "01",
+      "title": "Đặt vấn đề",
+      "subtitle": "Vì sao kiến trúc quyết định chi phí bảo trì",
+      "notes": "⏱ ~25s | MỞ: Phần đầu tiên làm rõ vấn đề nghiên cứu. | Ý CHÍNH: chi phí bảo trì phần mềm chiếm phần lớn tổng chi phí vòng đời; kiến trúc là yếu tố ảnh hưởng mạnh nhất tới chi phí này; ứng dụng di động chịu thêm sức ép từ vòng đời thành phần hệ điều hành. | CHUYỂN: Chúng ta cùng xem số liệu cụ thể của dự án khảo sát."
+    },
+    {
+      "layout": "BULLETS",
+      "section": "Đặt vấn đề",
+      "title": "Ba vấn đề của kiến trúc ứng dụng di động",
+      "lead": "Quan sát từ thực tiễn phát triển",
+      "bullets": [
+        "Logic nghiệp vụ bị trộn vào Activity/Fragment",
+        "Trạng thái giao diện mất khi cấu hình thay đổi",
+        "Khó viết kiểm thử đơn vị cho tầng hiển thị",
+        "Phụ thuộc trực tiếp vào nguồn dữ liệu cụ thể"
+      ],
+      "notes": "⏱ ~70s | MỞ: Từ khảo sát mã nguồn nhóm rút ra bốn vấn đề lặp lại. | Ý CHÍNH: thứ nhất, logic nghiệp vụ nằm trong thành phần vòng đời khiến việc tái sử dụng bất khả thi; thứ hai, trạng thái không được lưu giữ qua thay đổi cấu hình gây lỗi khó tái hiện; thứ ba, lớp hiển thị phụ thuộc framework nên không kiểm thử được trên JVM; thứ tư, phụ thuộc cứng vào nguồn dữ liệu khiến việc thay thế backend rất tốn kém. | CHUYỂN: MVVM được đề xuất để xử lý đồng thời bốn vấn đề này."
+    },
+    {
+      "layout": "FIGURE",
+      "section": "Cơ sở lý thuyết",
+      "title": "Luồng dữ liệu một chiều trong MVVM",
+      "image": "figures/fig-mvvm.png",
+      "caption": "Hình: Sơ đồ luồng dữ liệu trong MVVM",
+      "bullets": [
+        "View chỉ phát sự kiện, không giữ trạng thái",
+        "ViewModel giữ trạng thái, sống qua cấu hình",
+        "Repository là ranh giới với nguồn dữ liệu"
+      ],
+      "notes": "⏱ ~75s | MỞ: Sơ đồ bên trái mô tả luồng dữ liệu một chiều. | Ý CHÍNH: View gửi sự kiện lên ViewModel và nhận lại trạng thái qua luồng dữ liệu quan sát được; ViewModel không tham chiếu ngược tới View nên không rò rỉ bộ nhớ; Repository che giấu việc dữ liệu đến từ cơ sở dữ liệu cục bộ hay dịch vụ từ xa. | DẪN CHỨNG: cấu trúc này được Google khuyến nghị trong tài liệu kiến trúc ứng dụng chính thức. | CHUYỂN: Tiếp theo là cách nhóm đo mức độ tuân thủ."
+    },
+    {
+      "layout": "TWO_COL",
+      "section": "Phương pháp",
+      "title": "Hai hướng thu thập dữ liệu",
+      "left": { "heading": "Phân tích tĩnh", "bullets": ["Đếm dòng mã theo gói", "Dò phụ thuộc giữa các tầng", "Đối chiếu quy ước đặt tên"] },
+      "right": { "heading": "Phân tích lịch sử", "bullets": ["Thống kê commit theo tháng", "Tần suất thay đổi mỗi tệp", "Số tác giả đóng góp"] },
+      "notes": "⏱ ~70s | MỞ: Nhóm kết hợp hai hướng thu thập dữ liệu bổ sung cho nhau. | Ý CHÍNH: phân tích tĩnh cho biết cấu trúc hiện tại của mã nguồn tại thời điểm khảo sát; phân tích lịch sử cho biết cấu trúc đó hình thành và biến động ra sao. | DẪN CHỨNG: toàn bộ số liệu được sinh tự động bằng script nên có thể tái lập. | CHUYỂN: Kết quả định lượng được trình bày ngay sau đây."
+    },
+    {
+      "layout": "METRICS",
+      "section": "Kết quả",
+      "title": "Quy mô dự án khảo sát",
+      "metrics": [
+        { "value": "12,4k", "label": "dòng mã nguồn" },
+        { "value": "87", "label": "tệp Kotlin" },
+        { "value": "342", "label": "commit" },
+        { "value": "31%", "label": "tỷ lệ mã kiểm thử" }
+      ],
+      "notes": "⏱ ~65s | MỞ: Bốn chỉ số phản ánh quy mô và mức độ trưởng thành của dự án. | Ý CHÍNH: mười hai nghìn tư dòng mã là quy mô vừa, đủ lớn để kiến trúc có ý nghĩa nhưng vẫn khảo sát được thủ công; tỷ lệ mã kiểm thử ba mươi mốt phần trăm cao hơn đáng kể mức phổ biến của ứng dụng di động thương mại. | DẪN CHỨNG: các con số được trích từ tệp repo-profile.json do script sinh ra. | CHUYỂN: Phân bố mã nguồn theo gói cho thấy ranh giới tầng."
+    },
+    {
+      "layout": "CHART",
+      "section": "Kết quả",
+      "title": "Phân bố dòng mã theo tầng kiến trúc",
+      "chart": { "type": "bar", "labels": ["ui", "domain", "data", "test"], "series": [{ "name": "Dòng mã", "values": [4200, 1800, 3100, 3300] }], "showValue": true },
+      "bullets": ["Tầng ui chiếm tỷ trọng lớn nhất", "Tầng domain mỏng, cần xem xét", "Mã kiểm thử tương đương tầng data"],
+      "notes": "⏱ ~70s | MỞ: Biểu đồ cho thấy phân bố dòng mã trên bốn tầng. | Ý CHÍNH: tầng giao diện chiếm tỷ trọng lớn nhất, điều này bình thường với ứng dụng nhiều màn hình; tầng domain khá mỏng cho thấy logic nghiệp vụ có thể còn nằm lẫn ở nơi khác; khối lượng mã kiểm thử tương đương tầng dữ liệu là dấu hiệu tích cực. | CHUYỂN: Từ số liệu này nhóm rút ra các đánh giá sau."
+    },
+    {
+      "layout": "TABLE",
+      "section": "Đánh giá",
+      "title": "Mức độ tuân thủ theo từng tiêu chí",
+      "header": ["Tiêu chí", "Kỳ vọng", "Thực tế"],
+      "rows": [
+        ["View không giữ trạng thái", "Bắt buộc", "Đạt"],
+        ["ViewModel độc lập framework", "Bắt buộc", "Đạt một phần"],
+        ["Repository là ranh giới duy nhất", "Khuyến nghị", "Đạt"],
+        ["Kiểm thử cho mọi ViewModel", "Khuyến nghị", "Chưa đạt"]
+      ],
+      "source": "Nguồn: tổng hợp từ kết quả phân tích tĩnh của nhóm.",
+      "notes": "⏱ ~75s | MỞ: Bảng đối chiếu bốn tiêu chí then chốt giữa kỳ vọng và thực tế. | Ý CHÍNH: hai tiêu chí bắt buộc cơ bản được đáp ứng; tiêu chí ViewModel độc lập framework chỉ đạt một phần vì vẫn còn tham chiếu tới lớp tài nguyên của hệ điều hành; tiêu chí kiểm thử chưa đạt do một số ViewModel phức tạp không có kiểm thử tương ứng. | CHUYỂN: Những hạn chế của chính phương pháp cũng cần được nêu rõ."
+    },
+    {
+      "layout": "BULLETS",
+      "section": "Đánh giá",
+      "title": "Hạn chế của nghiên cứu",
+      "bullets": [
+        "Chỉ khảo sát một dự án, tính khái quát thấp",
+        "Phân tích tĩnh không đo được hiệu năng thực thi",
+        "Chưa phỏng vấn người bảo trì dự án"
+      ],
+      "notes": "⏱ ~60s | MỞ: Nhóm xin nêu rõ ba hạn chế để kết quả được hiểu đúng phạm vi. | Ý CHÍNH: thứ nhất, một trường hợp nghiên cứu không cho phép khái quát hóa cho toàn bộ ứng dụng Android; thứ hai, phân tích tĩnh chỉ phản ánh cấu trúc chứ không phản ánh hành vi lúc chạy; thứ ba, thiếu dữ liệu định tính từ người trực tiếp bảo trì. | CHUYỂN: Phần cuối là kết luận và hướng phát triển."
+    },
+    {
+      "layout": "SECTION",
+      "kicker": "05",
+      "title": "Kết luận",
+      "subtitle": "Những gì đã làm được và bước tiếp theo",
+      "notes": "⏱ ~25s | MỞ: Phần cuối tổng kết lại toàn bộ nghiên cứu. | Ý CHÍNH: nhóm đã xây dựng được quy trình đo mức độ tuân thủ kiến trúc có thể tái lập, áp dụng trên một dự án thực tế và chỉ ra được các điểm lệch chuẩn cụ thể. | CHUYỂN: Sau đây là ba kết luận chính."
+    },
+    {
+      "layout": "CLOSING",
+      "title": "Xin cảm ơn",
+      "subtitle": "Nhóm xin lắng nghe nhận xét của thầy và các bạn",
+      "contacts": ["Mã nguồn phân tích: github.com/android/architecture-samples", "Liên hệ: nhóm 07 — lớp CH-CNTT-K19"],
+      "notes": "⏱ ~30s | MỞ: Phần trình bày của nhóm đến đây kết thúc. | Ý CHÍNH: nhóm xin cảm ơn thầy đã hướng dẫn trong suốt quá trình thực hiện và sẵn sàng trả lời câu hỏi về phương pháp thu thập dữ liệu, cách tính các chỉ số cũng như hướng mở rộng sang nhiều dự án. | CHUYỂN: Em xin mời thầy và các bạn đặt câu hỏi."
+    }
+  ]
+}

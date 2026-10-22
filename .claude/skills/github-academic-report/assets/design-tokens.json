@@ -1,0 +1,86 @@
+{
+  "$comment": "Design system cho slide bao cao hoc thuat. Chon palette theo linh vuc cua du an; moi mau trong slide PHAI lay tu day.",
+  "layout": {
+    "name": "ACADEMIC_16x9",
+    "w": 13.333,
+    "h": 7.5,
+    "marginX": 0.8,
+    "titleY": 0.72,
+    "ruleY": 1.42,
+    "contentY": 1.78,
+    "contentH": 4.75,
+    "footerY": 6.82,
+    "footerRuleY": 6.74
+  },
+  "type": {
+    "fontHead": "Arial",
+    "fontBody": "Arial",
+    "display": 40,
+    "title": 28,
+    "sectionTitle": 36,
+    "h2": 20,
+    "body": 16,
+    "small": 13,
+    "caption": 11,
+    "kicker": 12,
+    "metricValue": 40
+  },
+  "spacing": {
+    "bulletGap": 0.1,
+    "blockGap": 0.28
+  },
+  "palettes": {
+    "indigo-slate": {
+      "label": "Indigo / Slate — mac dinh, hop bao cao ky thuat",
+      "bg": "FFFFFF",
+      "surface": "F2F5FA",
+      "ink": "111827",
+      "muted": "5B6577",
+      "line": "D6DCE8",
+      "primary": "26357A",
+      "primaryDark": "161F4D",
+      "accent": "E07B39",
+      "onPrimary": "FFFFFF",
+      "onDark": "E8ECF6",
+      "series": ["26357A", "E07B39", "5B8DEF", "3FA796", "9B5DE5", "8A94A6"]
+    },
+    "teal-graphite": {
+      "label": "Teal / Graphite — du lieu, phan tich, AI",
+      "bg": "FFFFFF",
+      "surface": "EEF5F4",
+      "ink": "13211F",
+      "muted": "566B68",
+      "line": "CFDEDB",
+      "primary": "14615C",
+      "primaryDark": "0B3B38",
+      "accent": "D96E4B",
+      "onPrimary": "FFFFFF",
+      "onDark": "DCEDEA",
+      "series": ["14615C", "D96E4B", "4FA3A0", "E0B23C", "7D6BB0", "7A8C8A"]
+    },
+    "burgundy-cream": {
+      "label": "Burgundy / Cream — kinh te, quan tri, giao duc",
+      "bg": "FFFFFF",
+      "surface": "F7F1EC",
+      "ink": "20140F",
+      "muted": "6B584F",
+      "line": "E3D5CB",
+      "primary": "6E1F32",
+      "primaryDark": "431220",
+      "accent": "C88A3D",
+      "onPrimary": "FFFFFF",
+      "onDark": "F1E3DA",
+      "series": ["6E1F32", "C88A3D", "9C5566", "5B7B6E", "8C7BA8", "9A8880"]
+    }
+  },
+  "budgets": {
+    "titleMaxChars": 60,
+    "bulletMaxChars": 100,
+    "maxBullets": 6,
+    "metricsMax": 4,
+    "tableMaxRows": 8,
+    "notesMinChars": 200,
+    "secondsPerSlideMin": 40,
+    "secondsPerSlideMax": 80
+  }
+}

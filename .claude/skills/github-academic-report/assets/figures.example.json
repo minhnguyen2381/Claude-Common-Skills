@@ -1,0 +1,16 @@
+{
+  "figures": [
+    {
+      "id": "fig-mvvm",
+      "kind": "mermaid",
+      "title": "Sơ đồ luồng dữ liệu trong MVVM",
+      "source": "flowchart LR\n  V[View] -->|su kien| VM[ViewModel]\n  VM -->|StateFlow| V\n  VM --> R[Repository]\n  R --> DB[(Room)]\n  R --> API[Remote API]"
+    },
+    {
+      "id": "fig-goi",
+      "kind": "mermaid",
+      "title": "Phân bố mã nguồn theo gói",
+      "source": "flowchart TD\n  A[app] --> B[data]\n  A --> C[domain]\n  A --> D[ui]\n  B --> B1[local]\n  B --> B2[remote]"
+    }
+  ]
+}
